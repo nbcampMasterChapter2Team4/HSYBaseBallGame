@@ -13,30 +13,26 @@ class BaseballGame {
     }
 
     func makeAnswer() -> Int {
-        var allNumbers: [Int] = Array(1...9)
-        var answerNumber: Int = 0
+        var allNumbers = Array(1...9)
+        var answer = 0
 
-        if let firstNumber = allNumbers.randomElement() {
-            allNumbers.remove(at: allNumbers.firstIndex(of: firstNumber)!)
-            answerNumber += firstNumber * 100
-        } else {
-            print("정답첫번째 숫자 오류")
+        for multiplier in 1...3 {
+            answer += makeNumber(from: &allNumbers, multiplier: multiplier)
         }
 
-        if let secondNumber = allNumbers.randomElement() {
-            allNumbers.remove(at: allNumbers.firstIndex(of: secondNumber)!)
-            answerNumber += secondNumber * 10
-        } else {
-            print("정답두번째 숫자 오류")
-        }
+        return answer
+    }
 
-        if let thirdNumber = allNumbers.randomElement() {
-            allNumbers.remove(at: allNumbers.firstIndex(of: thirdNumber)!)
-            answerNumber += thirdNumber
-        } else {
-            print("정답세번째 숫자 오류")
-        }
+    func makeNumber(from numbers: inout [Int], multiplier: Int) -> Int {
+        if let number = numbers.randomElement() {
+            numbers.remove(at: numbers.firstIndex(of: number)!)
+            let weight = Int(pow(10.0, Double(multiplier - 1)))
 
-        return answerNumber
+            return number * weight
+        } else {
+            print("정답 숫자 오류 \(multiplier)번째 자리")
+
+            return 0
+        }
     }
 }
