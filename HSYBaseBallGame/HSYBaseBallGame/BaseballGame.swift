@@ -74,7 +74,7 @@ class BaseballGame {
             return false
         }
 
-        if unwrappedInput.count != 3 {
+        if unwrappedInput.first == "0" {
             print("올바르지 않은 입력값입니다.")
             return false
         }
@@ -82,6 +82,15 @@ class BaseballGame {
         if inputNumber == answer {
             print("정답입니다!")
             return true
+        }
+
+        if unwrappedInput.count != 3 {
+            print("올바르지 않은 입력값입니다.")
+            return false
+        }
+
+        if !validateDoubleDigit(unwrappedInput) {
+            return false
         }
 
         let (strike, ball) = compareDigits(input: inputNumber, answer: String(answer))
@@ -99,7 +108,7 @@ class BaseballGame {
         return false
     }
 
-    // MARK: - 볼/스트라이크 갯수 확인 함수
+    // MARK: - 볼/스트라이크 갯수 확인, 글자 검사 함수
 
     func compareDigits(input: Int, answer: String) -> (strike: Int, ball: Int) {
         var strikeCount = 0
@@ -116,6 +125,25 @@ class BaseballGame {
         }
 
         return (strikeCount, ballCount)
+    }
+
+    // MARK: - 입력 숫자 중 중복 숫자가 있는지 검사함
+
+    func validateDoubleDigit(_ unwrappedInput: String) -> Bool {
+        var currentIndex = unwrappedInput.startIndex
+
+        while currentIndex < unwrappedInput.endIndex {
+            var nextIndex = unwrappedInput.index(after: currentIndex)
+            while nextIndex < unwrappedInput.endIndex {
+                if unwrappedInput[currentIndex] == unwrappedInput[nextIndex] {
+                    print("올바르지 않은 입력값입니다.")
+                    return false
+                }
+                nextIndex = unwrappedInput.index(after: nextIndex)
+            }
+            currentIndex = unwrappedInput.index(after: currentIndex)
+        }
+        return true
     }
 
 }
