@@ -22,7 +22,7 @@ class BaseballGame {
     // MARK: - 정답 생성 함수
 
     func makeAnswer() -> Int {
-        var allNumbers = Array(1...9)
+        var allNumbers = Array(0...9)
         var answer = 0
 
         for multiplier in 1...3 {
@@ -37,6 +37,11 @@ class BaseballGame {
     func makeNumber(from numbers: inout [Int], multiplier: Int) -> Int {
         if let number = numbers.randomElement() {
             numbers.remove(at: numbers.firstIndex(of: number)!)
+
+            if number == 0 && multiplier == 3 {
+                return makeNumber(from: &numbers, multiplier: multiplier)
+            }
+
             let weight = Int(pow(10.0, Double(multiplier - 1)))
 
             return number * weight
