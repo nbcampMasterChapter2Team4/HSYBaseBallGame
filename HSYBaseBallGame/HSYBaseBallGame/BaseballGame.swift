@@ -8,15 +8,42 @@ import Foundation
 
 class BaseballGame {
     func start() {
-        print("< 게임을 시작합니다 >")
-        let answer = makeAnswer()
-        //print(answer)
-        var isCorrect: Bool = false
+        var gameNumber: Int = 0
+        var gameRecords: [String] = []
 
-        while !isCorrect {
-            isCorrect = checkInput(input: makeInput(),
-                                   answer: answer)
-        }
+        repeat {
+            print("""
+            환영합니다! 원하시는 번호를 입력해주세요
+            1. 게임 시작하기  2. 게임 기록 보기  3. 종료하기
+            """)
+            if let input = readLine(), let number = Int(input) {
+                gameNumber = number
+            }
+
+            switch gameNumber {
+            case 1:
+                print("\n< 게임을 시작합니다 >")
+                let answer = makeAnswer()
+                //print(answer)
+                var isCorrect: Bool = false
+
+                while !isCorrect {
+                    isCorrect = checkInput(input: makeInput(),
+                                           answer: answer)
+                }
+
+            case 2:
+                for record in gameRecords {
+                    print(record)
+                }
+            case 3:
+                print("종료합니다.")
+            default:
+                print("올바른 번호를 입력해주세요.")
+
+            }
+        } while gameNumber != 3
+
     }
 
     // MARK: - 정답 생성 함수
@@ -145,5 +172,4 @@ class BaseballGame {
         }
         return true
     }
-
 }
