@@ -9,7 +9,7 @@ import Foundation
 class BaseballGame {
     func start() {
         var gameNumber: Int = 0
-        var gameRecords: [String] = []
+        var gameRecords: [Int] = []
 
         repeat {
             print("""
@@ -26,21 +26,30 @@ class BaseballGame {
                 let answer = makeAnswer()
                 //print(answer)
                 var isCorrect: Bool = false
+                var numberOfGame: Int = 0
 
                 while !isCorrect {
+                    numberOfGame += 1
                     isCorrect = checkInput(input: makeInput(),
                                            answer: answer)
                 }
 
+                gameRecords.append(numberOfGame)
+
             case 2:
-                for record in gameRecords {
-                    print(record)
+                print("\n< 게임 기록 보기 >")
+                if gameRecords.isEmpty {
+                    print("게임 기록이 없습니다.")
+                } else {
+                    for (index, record) in gameRecords.enumerated() {
+                        print("\(index + 1)번째 게임 : 시도 횟수 - \(record)")
+                    }
                 }
+                print("")
             case 3:
                 print("종료합니다.")
             default:
-                print("올바른 번호를 입력해주세요.")
-
+                print("올바른 숫자를 입력해주세요.")
             }
         } while gameNumber != 3
 
@@ -107,7 +116,7 @@ class BaseballGame {
         }
 
         if inputNumber == answer {
-            print("정답입니다!")
+            print("\n정답입니다!")
             return true
         }
 
