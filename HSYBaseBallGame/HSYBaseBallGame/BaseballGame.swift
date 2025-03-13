@@ -127,7 +127,12 @@ class BaseballGame {
         }
 
         guard let inputNumber = Int(unwrappedInput) else {
-            print("올바르지 않은 입력값입니다. 숫자를 입력해주세요.")
+            if let decimalValue = Decimal(string: unwrappedInput),
+               decimalValue > Decimal(Int.max) || decimalValue < Decimal(Int.min) {
+                print("올바르지 않은 입력값입니다. 3자리 숫자를 입력해주세요.")
+            } else {
+                print("올바르지 않은 입력값입니다. 숫자를 입력해주세요.")
+            }
             return false
         }
 
