@@ -6,12 +6,13 @@
 //
 import Foundation
 
-class BaseballGame {
-    func start() {
-        var gameNumber: Int = 0
-        var gameRecords: [Int] = []
+struct BaseballGame {
+    var gameRecords: [Int] = []
 
-        repeat {
+    mutating func start() {
+        var gameNumber: Int = 0
+
+        while true {
             print("""
             환영합니다! 원하시는 번호를 입력해주세요
             1. 게임 시작하기  2. 게임 기록 보기  3. 종료하기  4. 게임 설명
@@ -19,60 +20,20 @@ class BaseballGame {
             if let input = readLine(), let number = Int(input) {
                 gameNumber = number
             }
-
+            
             switch gameNumber {
             case 1:
-                print("\n< 게임을 시작합니다 >")
-                let answer = makeAnswer()
-                //print(answer)
-                var isCorrect: Bool = false
-                var numberOfGame: Int = 0
-
-                while !isCorrect {
-                    numberOfGame += 1
-                    isCorrect = checkInput(input: makeInput(),
-                                           answer: answer)
-                }
-
-                gameRecords.append(numberOfGame)
-
+                startBaseballGame()
             case 2:
-                print("\n< 게임 기록 보기 >")
-                if gameRecords.isEmpty {
-                    print("게임 기록이 없습니다. 게임을 하고 다시 돌아와 주세요.")
-                } else {
-                    for (index, record) in gameRecords.enumerated() {
-                        print("\(index + 1)번째 게임 : 시도 횟수 - \(record)")
-                    }
-                }
-                print("")
+                watchGameRecords()
             case 3:
-                print("종료하시려면 숫자3을 다시 눌러주세요.")
-                if let input = readLine(), let number = Int(input) {
-                    gameNumber = number
-                }
+                finishGame()
             case 4:
-                print("""
-    👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾
-    <게임 규칙>
-    1. 숫자 생성:
-        각 자리의 숫자는 중복 없이 무작위로 선택됩니다. 단, 맨 앞자리는 0이 될 수 없습니다.
-    2. 입력:
-        플레이어는 3자리 숫자를 입력합니다.
-        입력 값이 3자리가 아니거나 중복되는 숫자가 있을 경우 "올바르지 않은 입력값입니다."라는 메시지가 출력됩니다.
-    3. 피드백:
-        입력한 숫자와 비밀 숫자를 비교하여 다음과 같은 힌트를 제공합니다:
-        ⚾️스트라이크⚾️: 숫자와 자리가 모두 일치하는 경우
-        🥎볼🥎: 숫자는 존재하지만 자리 위치가 다른 경우
-        만약 아무 숫자도 일치하지 않으면 "Nothing"이라고 표시됩니다.
-    4. 정답 확인:
-        모든 숫자와 자리가 정확히 일치하면 "정답입니다!"라는 메시지가 출력되며 게임이 종료됩니다.
-    👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾
-    """)
+                explainGame()
             default:
                 print("올바른 숫자를 입력해주세요.(숫자 1~4)")
             }
-        } while gameNumber != 3
+        }
 
     }
 
@@ -120,7 +81,7 @@ class BaseballGame {
 
     // MARK: - 입력 처리 함수
 
-    func checkInput(input: String?, answer: Int) -> Bool {
+    func inputFeedback(input: String?, answer: Int) -> Bool {
         guard let unwrappedInput = input else {
             print("올바르지 않은 입력값입니다. 1111")
             return false
@@ -156,17 +117,31 @@ class BaseballGame {
 
         let (strike, ball) = compareDigits(input: inputNumber, answer: String(answer))
 
-        if strike == 0 && ball == 0 {
+        switch feedback(from: strike, ball: ball) {
+        case .nothing:
             print("Nothing")
-        } else if strike <= 0 {
-            print("\(ball)볼 \(String(repeating: "🥎", count: ball))")
-        } else if ball <= 0 {
-            print("\(strike)스트라이크 \(String(repeating: "⚾️", count: strike))")
-        } else {
-            print("\(strike)스트라이크 \(ball)볼")
+        case .strike(let count):
+            print("\(count)스트라이크 \(String(repeating: "⚾️", count: count))")
+        case .ball(let count):
+            print("\(count)볼 \(String(repeating: "🥎", count: count))")
+        case .strikeAndBall(let strikeCount, let ballCount):
+            print("\(strikeCount)스트라이크 \(String(repeating: "⚾️", count: strikeCount))")
+            print("\(ballCount)볼 \(String(repeating: "🥎", count: ballCount))")
         }
 
         return false
+    }
+
+    func feedback(from strike: Int, ball: Int) -> GameFeedback {
+        if strike == 0 && ball == 0 {
+            return .nothing
+        } else if strike == 0 {
+            return .ball(count: ball)
+        } else if ball == 0 {
+            return .strike(count: strike)
+        } else {
+            return .strikeAndBall(strike: strike, ball: ball)
+        }
     }
 
     // MARK: - 볼/스트라이크 갯수 확인, 글자 검사 함수
@@ -205,5 +180,61 @@ class BaseballGame {
             currentIndex = unwrappedInput.index(after: currentIndex)
         }
         return true
+    }
+
+    mutating func startBaseballGame() {
+        print("\n< 게임을 시작합니다 >")
+        let answer = makeAnswer()
+        var isCorrect: Bool = false
+        var numberOfGame: Int = 0
+
+        while !isCorrect {
+            numberOfGame += 1
+            isCorrect = inputFeedback(input: makeInput(),
+                                      answer: answer)
+        }
+
+        self.gameRecords.append(numberOfGame)
+    }
+
+    func watchGameRecords() {
+        print("\n< 게임 기록 보기 >")
+        if gameRecords.isEmpty {
+            print("게임 기록이 없습니다. 게임을 하고 다시 돌아와 주세요.")
+        } else {
+            for (index, record) in gameRecords.enumerated() {
+                print("\(index + 1)번째 게임 : 시도 횟수 - \(record)")
+            }
+        }
+        print("")
+    }
+
+    func finishGame() {
+        print("종료하시려면 숫자3을 다시 눌러주세요.")
+        if let input = readLine(), let number = Int(input) {
+            if number == 3 {
+                exit(0)
+            }
+        }
+    }
+
+    func explainGame() {
+        print("""
+            👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾
+            <게임 규칙>
+            1. 숫자 생성:
+            각 자리의 숫자는 중복 없이 무작위로 선택됩니다. 단, 맨 앞자리는 0이 될 수 없습니다.
+            2. 입력:
+            플레이어는 3자리 숫자를 입력합니다.
+            입력 값이 3자리가 아니거나 중복되는 숫자가 있을 경우 "올바르지 않은 입력값입니다."라는 메시지가 출력됩니다.
+            3. 피드백:
+            입력한 숫자와 비밀 숫자를 비교하여 다음과 같은 힌트를 제공합니다:
+            ⚾️스트라이크⚾️: 숫자와 자리가 모두 일치하는 경우
+            🥎볼🥎: 숫자는 존재하지만 자리 위치가 다른 경우
+            만약 아무 숫자도 일치하지 않으면 "Nothing"이라고 표시됩니다.
+            4. 정답 확인:
+            모든 숫자와 자리가 정확히 일치하면 "정답입니다!"라는 메시지가 출력되며 게임이 종료됩니다.
+            👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾👾
+            """)
     }
 }
