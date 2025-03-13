@@ -98,11 +98,11 @@
 				};
 			};
 			buildConfigurationList = BD3FE03A2D7EB20D00505902 /* Build configuration list for PBXProject "HSYBaseBallGame" */;
-			developmentRegion = en;
+			developmentRegion = ko;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				en,
 				Base,
+				ko,
 			);
 			mainGroup = BD3FE0362D7EB20D00505902;
 			minimizedProjectReferenceProxies = 1;
